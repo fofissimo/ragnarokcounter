@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ragnarok LATAM — Controle de Instâncias</title>
+<style>
+:root{
+  --bg:#fff7fb; --card:#ffffff; --text:#332536; --muted:#856d82;
+  --line:#ead8e6; --pink:#ff5da2; --pink-soft:#ffe1ee;
+  --blue:#4d8dff; --blue-soft:#e1edff; --purple:#7a4cff;
+  --green:#20a66a; --shadow:0 8px 25px rgba(92,48,83,.09);
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#fff8fc 0%,#f8f3ff 100%);
+font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+header{padding:22px 16px 12px;text-align:center}
+h1{margin:0;font-size:clamp(24px,6vw,36px)}
+.subtitle{margin:6px 0 0;color:var(--muted);font-size:14px}
+main{max-width:850px;margin:auto;padding:8px 12px 35px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin:14px 0;overflow:hidden}
+.section-head{padding:15px 16px;background:linear-gradient(135deg,#fff,#fff5fa);border-bottom:1px solid var(--line)}
+.section-head h2{margin:0;font-size:19px}
+.section-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th,td{padding:11px 9px;border-bottom:1px solid #f0e5ed}
+tr:last-child td{border-bottom:0}
+th{font-size:12px;color:var(--muted);background:#fffafd}
+th:first-child,td:first-child{text-align:left;width:auto}
+th.person,td.person{width:68px;text-align:center}
+.person-name{display:block;font-weight:800;font-size:11px}
+.elora-head{color:#d8337d}.varig-head{color:#286fdc}
+.instance{font-size:14px;font-weight:650}
+.sub{display:block;color:var(--muted);font-size:11px;font-weight:500;margin-top:2px}
+.check{
+  width:30px;height:30px;border-radius:9px;border:2px solid #d9cbd6;
+  appearance:none;-webkit-appearance:none;cursor:pointer;display:inline-grid;place-items:center;
+  background:#fff;transition:.15s transform,.15s box-shadow,.15s background;
+}
+.check:active{transform:scale(.92)}
+.check.elora:checked{background:var(--pink);border-color:var(--pink);box-shadow:0 4px 12px rgba(255,93,162,.28)}
+.check.varig:checked{background:var(--blue);border-color:var(--blue);box-shadow:0 4px 12px rgba(77,141,255,.28)}
+.check:checked::after{content:"✓";color:white;font-weight:900;font-size:18px}
+.date{display:block;font-size:10px;color:var(--muted);margin-top:3px;min-height:12px}
+.legend{display:flex;justify-content:center;gap:18px;padding:13px 10px;color:var(--muted);font-size:12px}
+.dot{width:11px;height:11px;border-radius:4px;display:inline-block;vertical-align:-1px;margin-right:5px}
+.dot.pink{background:var(--pink)} .dot.blue{background:var(--blue)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.tabbtn.active{background:#7a4cff;color:#fff;border-color:#7a4cff}
+button{border:1px solid var(--line);background:white;color:var(--text);border-radius:11px;padding:9px 12px;font-weight:700;cursor:pointer}
+button:hover{filter:brightness(.98)}
+button.danger{color:#b83c64}
+.goma{display:inline-block;margin-left:7px;padding:2px 6px;border-radius:7px;background:#fff0f6;color:#d82d77;font-size:9px;font-weight:900;vertical-align:2px;white-space:nowrap}
+.candy{font-size:12px}
+.next{margin:0 16px 15px;padding:11px 12px;border-radius:11px;background:#f6f1ff;color:#5d4388;font-size:12px}
+.empty{padding:18px 16px;color:var(--muted);font-size:13px}
+.status{position:fixed;left:50%;bottom:14px;transform:translateX(-50%) translateY(80px);background:#30252f;color:white;padding:10px 14px;border-radius:12px;font-size:12px;opacity:0;transition:.25s;z-index:5}
+.status.show{transform:translateX(-50%) translateY(0);opacity:1}
+@media(max-width:420px){
+  th.person,td.person{width:58px}
+  .check{width:28px;height:28px}
+  .instance{font-size:13px}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>⚔️ Ragnarok LATAM</h1>
+  <p class="subtitle">Controle de instâncias — Elora & Varig</p>
+</header>
+
+<main>
+  <div class="toolbar">
+    <button id="todayBtn">📅 Hoje</button><button id="historyBtn" class="tabbtn">📜 Histórico</button>
+    <button id="clearDaily">↻ Limpar diárias</button>
+    <button id="clearAll" class="danger">⚠ Limpar tudo</button>
+  </div>
+
+  <section class="card">
+    <div class="section-head">
+      <h2>📆 Instâncias diárias</h2>
+      <p>O marcado fica salvo no aparelho e é renovado automaticamente a cada novo dia.</p>
+    </div>
+    <table><thead><tr><th>Instância</th><th class="person elora-head">Elora</th><th class="person varig-head">Varig</th></tr></thead>
+    <tbody id="daily"></tbody></table>
+    <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span></div>
+  </section>
+
+  <section class="card">
+    <div class="section-head">
+      <h2>⏳ A cada 3 dias</h2>
+      <p>A data da última conclusão fica salva para cada personagem.</p>
+    </div>
+    <table><thead><tr><th>Instância</th><th class="person elora-head">Elora</th><th class="person varig-head">Varig</th></tr></thead>
+    <tbody id="three"></tbody></table>
+    <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span></div>
+  </section>
+<section class="card" id="historyPanel" style="display:none">
+    <div class="section-head">
+      <h2>📜 Histórico</h2>
+      <p>Veja o que Elora e Varig fizeram em cada dia. O histórico fica salvo no navegador.</p>
+    </div>
+    <div id="historyList"></div>
+  </section>
+</main>
+
+<div class="status" id="status"></div>
+
+<script>
+const daily = [
+  {name:"Palacio das magoas", goma:true},
+  {name:"Torneio de magia", goma:true},
+  {name:"Invasao ao aeroplano", goma:true},
+  {name:"Sonho sombrio", goma:true},
+  {name:"Ruina de Gh(schimidt)", goma:true},
+  {name:"Edda do Biolaboratorio", goma:true},
+  {name:"Salao de Ymir", goma:true},
+  {name:"Memorial COR", goma:false},
+  {name:"Varmida", goma:false},
+  {name:"Torre do demonio", goma:false},
+  {name:"Gh", goma:false},
+  {name:"Celine", goma:false}
+];
+
+const three = [
+  {name:"Gh sombria", goma:false},
+  {name:"Gh infernal", goma:true},
+  {name:"Fortaleza Voadora", goma:true}
+];
+
+
+const KEY = "ragnarok_instancias_v1";
+
+function todayKey(){
+  const d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function load(){
+  try{return JSON.parse(localStorage.getItem(KEY)) || {daily:{},three:{},history:{}}}
+  catch(e){return {daily:{},three:{},history:{}}}
+}
+let data = load();
+
+function save(){localStorage.setItem(KEY,JSON.stringify(data));}
+
+function daysDiff(a,b){
+  const A=new Date(a+"T00:00:00"), B=new Date(b+"T00:00:00");
+  return Math.floor((B-A)/86400000);
+}
+function labelDate(v){
+  if(!v)return "";
+  const [y,m,d]=v.split("-");
+  return d+"/"+m;
+}
+function showStatus(msg){
+  const el=document.getElementById("status");el.textContent=msg;el.classList.add("show");
+  clearTimeout(showStatus.t);showStatus.t=setTimeout(()=>el.classList.remove("show"),1500);
+}
+function makeDailyRow(item,i){
+  const tr=document.createElement("tr");
+  const badge=item.goma
+    ? '<span class="goma">✕2 DROP <span class="candy">🍬</span> GOMA</span>'
+    : '';
+  tr.innerHTML=`<td class="instance">${item.name}${badge}</td>
+    <td class="person"><input class="check elora" type="checkbox" data-type="daily" data-i="${i}" data-p="elora"></td>
+    <td class="person"><input class="check varig" type="checkbox" data-type="daily" data-i="${i}" data-p="varig"></td>`;
+  return tr;
+}
+function makeThreeRow(item,i){
+  const tr=document.createElement("tr");
+  const e=data.three[`${i}-elora`], v=data.three[`${i}-varig`];
+  const badge=item.goma
+    ? '<span class="goma">✕2 DROP <span class="candy">🍬</span> GOMA</span>'
+    : '';
+  tr.innerHTML=`<td class="instance">${item.name}${badge}</td>
+    <td class="person"><input class="check elora" type="checkbox" data-type="three" data-i="${i}" data-p="elora"><span class="date" id="date-three-${i}-elora">${labelDate(e)}</span></td>
+    <td class="person"><input class="check varig" type="checkbox" data-type="three" data-i="${i}" data-p="varig"><span class="date" id="date-three-${i}-varig">${labelDate(v)}</span></td>`;
+  return tr;
+}
+function render(){
+  const d=document.getElementById("daily"), t=document.getElementById("three");
+  d.innerHTML=""; t.innerHTML="";
+  daily.forEach((item,i)=>d.appendChild(makeDailyRow(item,i)));
+  three.forEach((item,i)=>t.appendChild(makeThreeRow(item,i)));
+  const today=todayKey();
+
+  document.querySelectorAll('[data-type="daily"]').forEach(x=>{
+    const k=`${x.dataset.i}-${x.dataset.p}`;
+    x.checked=data.daily[k]===today;
+  });
+  document.querySelectorAll('[data-type="three"]').forEach(x=>{
+    const k=`${x.dataset.i}-${x.dataset.p}`, last=data.three[k];
+    x.checked=!!last && daysDiff(last,today)<3;
+    x.title=last ? `Feita em ${last}. Próxima disponível em ${labelDate(addDays(last,3))}` : "Ainda não feita";
+  });
+}
+function addDays(s,n){
+  const d=new Date(s+"T00:00:00");d.setDate(d.getDate()+n);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+document.addEventListener("change",e=>{
+  if(!e.target.matches(".check"))return;
+  const {type,i,p}=e.target.dataset,k=`${i}-${p}`, today=todayKey();
+  if(type==="daily"){
+    if(e.target.checked){
+      data.daily[k]=today;
+      data.history[today]=data.history[today]||{};
+      data.history[today][k]={type:"daily",name:daily[+i].name,person:p};
+    }else{
+      delete data.daily[k];
+      if(data.history[today]) delete data.history[today][k];
+    }
+  }else{
+    if(e.target.checked){
+      const last=data.three[k];
+      if(last && daysDiff(last,today)<3){
+        e.target.checked=true;
+        showStatus("Ainda está no período de recarga de 3 dias.");
+        return;
+      }
+      data.three[k]=today;
+      data.history[today]=data.history[today]||{};
+      data.history[today][k]={type:"three",name:three[+i].name,person:p};
+    }else{
+      delete data.three[k];
+      if(data.history[today]) delete data.history[today][k];
+    }
+  }
+  save(); render(); renderHistory(); showStatus("Salvo neste aparelho ✓");
+});
+
+function renderHistory(){
+  const box=document.getElementById("historyList");
+  const dates=Object.keys(data.history||{}).sort((a,b)=>b.localeCompare(a));
+  if(!dates.length){
+    box.innerHTML='<div class="empty">Nenhuma instância concluída ainda.</div>';
+    return;
+  }
+  box.innerHTML=dates.map(date=>{
+    const items=Object.values(data.history[date]||{});
+    const elora=items.filter(x=>x.person==="elora");
+    const varig=items.filter(x=>x.person==="varig");
+    const fmt=date.split("-").reverse().join("/");
+    const list=(arr,person)=>{
+    if(!arr.length) return "";
+    const personName = person==="elora" ? "🌸 Elora" : "🔷 Varig";
+    const items = arr.map(x => {
+      const suffix = x.type==="three" ? ' <span class="sub" style="display:inline">• 3 em 3 dias</span>' : "";
+      return '<li>' + x.name + suffix + '</li>';
+    }).join("");
+    return '<div style="margin-top:8px"><b>' + personName + '</b><ul style="margin:5px 0 0;padding-left:20px">' + items + '</ul></div>';
+  };
+    return `<div style="padding:14px 16px;border-bottom:1px solid #f0e5ed">
+      <b>📅 ${fmt}</b>${list(elora,"elora")}${list(varig,"varig")}
+    </div>`;
+  }).join("");
+}
+
+
+document.getElementById("clearDaily").onclick=()=>{
+  if(confirm("Limpar todas as marcações diárias?")){
+    data.daily={};save();render();showStatus("Diárias limpas");
+  }
+};
+document.getElementById("clearAll").onclick=()=>{
+  if(confirm("Isso apagará todas as marcações salvas. Continuar?")){
+    data={daily:{},three:{},history:{}};save();render();renderHistory();showStatus("Tudo foi limpo");
+  }
+};
+document.getElementById("todayBtn").onclick=()=>{document.getElementById("historyPanel").style.display="none";document.getElementById("historyBtn").classList.remove("active");render();showStatus("Data atual: "+todayKey().split("-").reverse().join("/"));};
+document.getElementById("historyBtn").onclick=()=>{
+  const panel=document.getElementById("historyPanel");
+  const open=panel.style.display!=="none";
+  panel.style.display=open?"none":"block";
+  document.getElementById("historyBtn").classList.toggle("active",!open);
+  if(!open) renderHistory();
+};
+
+render();renderHistory();
+</script>
+</body>
+</html>
