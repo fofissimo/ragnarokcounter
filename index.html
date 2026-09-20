@@ -22,14 +22,14 @@ main{max-width:850px;margin:auto;padding:8px 12px 35px}
 .section-head{padding:15px 16px;background:linear-gradient(135deg,#fff,#fff5fa);border-bottom:1px solid var(--line)}
 .section-head h2{margin:0;font-size:19px}
 .section-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
-table{width:100%;border-collapse:collapse;table-layout:fixed}
+table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:360px}
 th,td{padding:11px 9px;border-bottom:1px solid #f0e5ed}
 tr:last-child td{border-bottom:0}
 th{font-size:12px;color:var(--muted);background:#fffafd}
 th:first-child,td:first-child{text-align:left;width:auto}
-th.person,td.person{width:68px;text-align:center}
+th.person,td.person{width:70px;min-width:70px;text-align:center}
 .person-name{display:block;font-weight:800;font-size:11px}
-.elora-head{color:#d8337d}.varig-head{color:#286fdc}
+.elora-head{color:#d8337d}.varig-head{color:#286fdc}.lunara-head{color:#7a4cff}
 .instance{font-size:14px;font-weight:650}
 .sub{display:block;color:var(--muted);font-size:11px;font-weight:500;margin-top:2px}
 .check{
@@ -40,6 +40,7 @@ th.person,td.person{width:68px;text-align:center}
 .check:active{transform:scale(.92)}
 .check.elora:checked{background:var(--pink);border-color:var(--pink);box-shadow:0 4px 12px rgba(255,93,162,.28)}
 .check.varig:checked{background:var(--blue);border-color:var(--blue);box-shadow:0 4px 12px rgba(77,141,255,.28)}
+.check.lunara:checked{background:var(--purple);border-color:var(--purple);box-shadow:0 4px 12px rgba(122,76,255,.28)}
 .check:checked::after{content:"✓";color:white;font-weight:900;font-size:18px}
 .date{display:block;font-size:10px;color:var(--muted);margin-top:3px;min-height:12px}
 .legend{display:flex;justify-content:center;gap:18px;padding:13px 10px;color:var(--muted);font-size:12px}
@@ -56,8 +57,8 @@ button.danger{color:#b83c64}
 .status{position:fixed;left:50%;bottom:14px;transform:translateX(-50%) translateY(80px);background:#30252f;color:white;padding:10px 14px;border-radius:12px;font-size:12px;opacity:0;transition:.25s;z-index:5}
 .status.show{transform:translateX(-50%) translateY(0);opacity:1}
 @media(max-width:420px){
-  th.person,td.person{width:58px}
-  .check{width:28px;height:28px}
+  th.person,td.person{width:64px;min-width:64px}
+  .check{width:30px;height:30px}
   .instance{font-size:13px}
 }
 </style>
@@ -65,7 +66,7 @@ button.danger{color:#b83c64}
 <body>
 <header>
   <h1>⚔️ Ragnarok LATAM</h1>
-  <p class="subtitle">Controle de instâncias — Elora & Varig</p>
+  <p class="subtitle">Controle de instâncias — Elora, Varig & Lunara</p>
 </header>
 
 <main>
@@ -80,9 +81,9 @@ button.danger{color:#b83c64}
       <h2>📆 Instâncias diárias</h2>
       <p>O marcado fica salvo no aparelho e é renovado automaticamente a cada novo dia.</p>
     </div>
-    <table><thead><tr><th>Instância</th><th class="person elora-head">Elora</th><th class="person varig-head">Varig</th></tr></thead>
+    <table><thead><tr><th>Instância</th><th class="person elora-head">Elora</th><th class="person varig-head">Varig</th><th class="person lunara-head">Lunara</th></tr></thead>
     <tbody id="daily"></tbody></table>
-    <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span></div>
+    <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span><span><i class="dot" style="background:#7a4cff"></i>Lunara</span></div>
   </section>
 
   <section class="card">
@@ -90,14 +91,14 @@ button.danger{color:#b83c64}
       <h2>⏳ A cada 3 dias</h2>
       <p>A data da última conclusão fica salva para cada personagem.</p>
     </div>
-    <table><thead><tr><th>Instância</th><th class="person elora-head">Elora</th><th class="person varig-head">Varig</th></tr></thead>
+    <table><thead><tr><th>Instância</th><th class="person elora-head">Elora</th><th class="person varig-head">Varig</th><th class="person lunara-head">Lunara</th></tr></thead>
     <tbody id="three"></tbody></table>
-    <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span></div>
+    <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span><span><i class="dot" style="background:#7a4cff"></i>Lunara</span></div>
   </section>
 <section class="card" id="historyPanel" style="display:none">
     <div class="section-head">
       <h2>📜 Histórico</h2>
-      <p>Veja o que Elora e Varig fizeram em cada dia. O histórico fica salvo no navegador.</p>
+      <p>Veja o que Elora, Varig e Lunara fizeram em cada dia. O histórico fica salvo no navegador.</p>
     </div>
     <div id="historyList"></div>
   </section>
@@ -115,8 +116,6 @@ const daily = [
   {name:"Edda do Biolaboratorio", goma:true},
   {name:"Salao de Ymir", goma:true},
   {name:"Memorial COR", goma:false},
-  {name:"Varmida", goma:false},
-  {name:"Torre do demonio", goma:false},
   {name:"Gh", goma:false},
   {name:"Celine", goma:false}
 ];
@@ -131,8 +130,12 @@ const three = [
 const KEY = "ragnarok_instancias_v1";
 
 function todayKey(){
-  const d = new Date();
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  // O "dia do jogo" vira às 04:00 no horário de Brasília (UTC-3).
+  // Antes das 04:00, ainda pertence ao dia anterior.
+  const now = new Date();
+  const brasilia = new Date(now.toLocaleString("en-US",{timeZone:"America/Sao_Paulo"}));
+  if(brasilia.getHours() < 4) brasilia.setDate(brasilia.getDate()-1);
+  return brasilia.getFullYear()+"-"+String(brasilia.getMonth()+1).padStart(2,"0")+"-"+String(brasilia.getDate()).padStart(2,"0");
 }
 function load(){
   try{return JSON.parse(localStorage.getItem(KEY)) || {daily:{},three:{},history:{}}}
@@ -162,18 +165,20 @@ function makeDailyRow(item,i){
     : '';
   tr.innerHTML=`<td class="instance">${item.name}${badge}</td>
     <td class="person"><input class="check elora" type="checkbox" data-type="daily" data-i="${i}" data-p="elora"></td>
-    <td class="person"><input class="check varig" type="checkbox" data-type="daily" data-i="${i}" data-p="varig"></td>`;
+    <td class="person"><input class="check varig" type="checkbox" data-type="daily" data-i="${i}" data-p="varig"></td>
+    <td class="person"><input class="check lunara" type="checkbox" data-type="daily" data-i="${i}" data-p="lunara"></td>`;
   return tr;
 }
 function makeThreeRow(item,i){
   const tr=document.createElement("tr");
-  const e=data.three[`${i}-elora`], v=data.three[`${i}-varig`];
+  const e=data.three[`${i}-elora`], v=data.three[`${i}-varig`], l=data.three[`${i}-lunara`];
   const badge=item.goma
     ? '<span class="goma">✕2 DROP <span class="candy">🍬</span> GOMA</span>'
     : '';
   tr.innerHTML=`<td class="instance">${item.name}${badge}</td>
     <td class="person"><input class="check elora" type="checkbox" data-type="three" data-i="${i}" data-p="elora"><span class="date" id="date-three-${i}-elora">${labelDate(e)}</span></td>
-    <td class="person"><input class="check varig" type="checkbox" data-type="three" data-i="${i}" data-p="varig"><span class="date" id="date-three-${i}-varig">${labelDate(v)}</span></td>`;
+    <td class="person"><input class="check varig" type="checkbox" data-type="three" data-i="${i}" data-p="varig"><span class="date" id="date-three-${i}-varig">${labelDate(v)}</span></td>
+    <td class="person"><input class="check lunara" type="checkbox" data-type="three" data-i="${i}" data-p="lunara"><span class="date" id="date-three-${i}-lunara">${labelDate(l)}</span></td>`;
   return tr;
 }
 function render(){
@@ -240,10 +245,11 @@ function renderHistory(){
     const items=Object.values(data.history[date]||{});
     const elora=items.filter(x=>x.person==="elora");
     const varig=items.filter(x=>x.person==="varig");
+    const lunara=items.filter(x=>x.person==="lunara");
     const fmt=date.split("-").reverse().join("/");
     const list=(arr,person)=>{
     if(!arr.length) return "";
-    const personName = person==="elora" ? "🌸 Elora" : "🔷 Varig";
+    const personName = person==="elora" ? "🌸 Elora" : person==="varig" ? "🔷 Varig" : "🟣 Lunara";
     const items = arr.map(x => {
       const suffix = x.type==="three" ? ' <span class="sub" style="display:inline">• 3 em 3 dias</span>' : "";
       return '<li>' + x.name + suffix + '</li>';
@@ -251,7 +257,7 @@ function renderHistory(){
     return '<div style="margin-top:8px"><b>' + personName + '</b><ul style="margin:5px 0 0;padding-left:20px">' + items + '</ul></div>';
   };
     return `<div style="padding:14px 16px;border-bottom:1px solid #f0e5ed">
-      <b>📅 ${fmt}</b>${list(elora,"elora")}${list(varig,"varig")}
+      <b>📅 ${fmt}</b>${list(elora,"elora")}${list(varig,"varig")}${list(lunara,"lunara")}
     </div>`;
   }).join("");
 }
