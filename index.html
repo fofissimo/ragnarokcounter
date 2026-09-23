@@ -83,7 +83,7 @@ button.danger{color:#b83c64}
     </div>
     <table><thead><tr><th>Instância</th><th class="person elora-head">Elora</th><th class="person varig-head">Varig</th><th class="person lunara-head">Lunara</th></tr></thead>
     <tbody id="daily"></tbody></table>
-    <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span><span><i class="dot" style="background:#7a4cff"></i>Lunara</span></div>
+    <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span><span style="color:#7a4cff">● Lunara</span></div>
   </section>
 
   <section class="card">
@@ -93,7 +93,7 @@ button.danger{color:#b83c64}
     </div>
     <table><thead><tr><th>Instância</th><th class="person elora-head">Elora</th><th class="person varig-head">Varig</th><th class="person lunara-head">Lunara</th></tr></thead>
     <tbody id="three"></tbody></table>
-    <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span><span><i class="dot" style="background:#7a4cff"></i>Lunara</span></div>
+    <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span><span style="color:#7a4cff">● Lunara</span></div>
   </section>
 <section class="card" id="historyPanel" style="display:none">
     <div class="section-head">
@@ -108,6 +108,8 @@ button.danger{color:#b83c64}
 
 <script>
 const daily = [
+  {name:"Novo Evento", goma:false},
+  {name:"Memorias de Sarah", goma:false},
   {name:"Palacio das magoas", goma:true},
   {name:"Torneio de magia", goma:true},
   {name:"Invasao ao aeroplano", goma:true},
@@ -171,14 +173,14 @@ function makeDailyRow(item,i){
 }
 function makeThreeRow(item,i){
   const tr=document.createElement("tr");
-  const e=data.three[`${i}-elora`], v=data.three[`${i}-varig`], l=data.three[`${i}-lunara`];
+  const e=data.three[`${i}-elora`], v=data.three[`${i}-varig`];
   const badge=item.goma
     ? '<span class="goma">✕2 DROP <span class="candy">🍬</span> GOMA</span>'
     : '';
   tr.innerHTML=`<td class="instance">${item.name}${badge}</td>
     <td class="person"><input class="check elora" type="checkbox" data-type="three" data-i="${i}" data-p="elora"><span class="date" id="date-three-${i}-elora">${labelDate(e)}</span></td>
     <td class="person"><input class="check varig" type="checkbox" data-type="three" data-i="${i}" data-p="varig"><span class="date" id="date-three-${i}-varig">${labelDate(v)}</span></td>
-    <td class="person"><input class="check lunara" type="checkbox" data-type="three" data-i="${i}" data-p="lunara"><span class="date" id="date-three-${i}-lunara">${labelDate(l)}</span></td>`;
+    <td class="person"><input class="check lunara" type="checkbox" data-type="three" data-i="${i}" data-p="lunara"><span class="date" id="date-three-${i}-lunara">${labelDate(data.three[`${i}-lunara`])}</span></td>`;
   return tr;
 }
 function render(){
