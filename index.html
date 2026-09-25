@@ -169,8 +169,19 @@ function todayKey(){
   return brasilia.getFullYear()+"-"+String(brasilia.getMonth()+1).padStart(2,"0")+"-"+String(brasilia.getDate()).padStart(2,"0");
 }
 function load(){
-  try{return JSON.parse(localStorage.getItem(KEY)) || {daily:{},three:{},seven:{},history:{}}}
-  catch(e){return {daily:{},three:{},seven:{},history:{}}}
+  const vazio={daily:{},three:{},seven:{},history:{}};
+  try{
+    const salvo=JSON.parse(localStorage.getItem(KEY));
+    if(!salvo || typeof salvo!=="object") return vazio;
+    return {
+      daily:(salvo.daily && typeof salvo.daily==="object") ? salvo.daily : {},
+      three:(salvo.three && typeof salvo.three==="object") ? salvo.three : {},
+      seven:(salvo.seven && typeof salvo.seven==="object") ? salvo.seven : {},
+      history:(salvo.history && typeof salvo.history==="object") ? salvo.history : {}
+    };
+  }catch(e){
+    return vazio;
+  }
 }
 let data = load();
 
