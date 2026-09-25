@@ -22,6 +22,19 @@ main{max-width:850px;margin:auto;padding:8px 12px 35px}
 .section-head{padding:15px 16px;background:linear-gradient(135deg,#fff,#fff5fa);border-bottom:1px solid var(--line)}
 .section-head h2{margin:0;font-size:19px}
 .section-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.priority{
+  padding:10px 14px;
+  margin:0;
+  color:#fff;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.2px;
+  text-align:left;
+}
+.priority.maxima{background:linear-gradient(135deg,#d92f72,#f05a91)}
+.priority.alta{background:linear-gradient(135deg,#d98218,#f0a63d)}
+.priority.media{background:linear-gradient(135deg,#4778d9,#6d9af0)}
+.priority.baixa{background:linear-gradient(135deg,#7a4cff,#9b7cff)}
 table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:360px}
 th,td{padding:11px 9px;border-bottom:1px solid #f0e5ed}
 tr:last-child td{border-bottom:0}
@@ -67,6 +80,7 @@ button.danger{color:#b83c64}
 <header>
   <h1>⚔️ Ragnarok LATAM</h1>
   <p class="subtitle">Controle de instâncias — Elora, Varig & Lunara</p>
+  <p style="margin:10px 0 0;font-weight:900;color:#b83c64;font-size:14px;">LEMBRAR DE ENTREGAR NAS PLACAS PARA RECEBER MOEDAS DO DESBRAVADOR</p>
 </header>
 
 <main>
@@ -95,6 +109,15 @@ button.danger{color:#b83c64}
     <tbody id="three"></tbody></table>
     <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span><span style="color:#7a4cff">● Lunara</span></div>
   </section>
+<section class="card">
+    <div class="section-head">
+      <h2>📅 A cada 7 dias</h2>
+      <p>A data da última conclusão fica salva para cada personagem.</p>
+    </div>
+    <table><thead><tr><th>Instância</th><th class="person elora-head">Elora</th><th class="person varig-head">Varig</th><th class="person lunara-head">Lunara</th></tr></thead>
+    <tbody id="seven"></tbody></table>
+    <div class="legend"><span><i class="dot pink"></i>Elora</span><span><i class="dot blue"></i>Varig</span><span style="color:#7a4cff">● Lunara</span></div>
+  </section>
 <section class="card" id="historyPanel" style="display:none">
     <div class="section-head">
       <h2>📜 Histórico</h2>
@@ -108,24 +131,30 @@ button.danger{color:#b83c64}
 
 <script>
 const daily = [
-  {name:"Novo Evento", goma:false},
-  {name:"Memorias de Sarah", goma:false},
+  {name:"Memorial COR", goma:false},
+  {name:"GH", goma:false},
+  {name:"Celine", goma:false},
+  {name:"Sonho sombrio", goma:true},
+  {name:"Invasao ao aeroplano", goma:true},
   {name:"Palacio das magoas", goma:true},
   {name:"Torneio de magia", goma:true},
-  {name:"Invasao ao aeroplano", goma:true},
-  {name:"Sonho sombrio", goma:true},
-  {name:"Ruina de Gh(schimidt)", goma:true},
-  {name:"Edda do Biolaboratorio", goma:true},
   {name:"Salao de Ymir", goma:true},
-  {name:"Memorial COR", goma:false},
-  {name:"Gh", goma:false},
-  {name:"Celine", goma:false}
+  {name:"Edda do Biolaboratorio", goma:true},
+  {name:"Ruina de Gh(schimidt)", goma:true},
+  {name:"Torre do demonio", goma:false},
+  {name:"Varmida", goma:false},
+  {name:"Memorias de Sarah", goma:false},
+  {name:"Evento", goma:false}
 ];
 
 const three = [
   {name:"Gh sombria", goma:false},
   {name:"Gh infernal", goma:true},
   {name:"Fortaleza Voadora", goma:true}
+];
+
+const seven = [
+  {name:"Hospital Abandonado", goma:false}
 ];
 
 
@@ -140,8 +169,8 @@ function todayKey(){
   return brasilia.getFullYear()+"-"+String(brasilia.getMonth()+1).padStart(2,"0")+"-"+String(brasilia.getDate()).padStart(2,"0");
 }
 function load(){
-  try{return JSON.parse(localStorage.getItem(KEY)) || {daily:{},three:{},history:{}}}
-  catch(e){return {daily:{},three:{},history:{}}}
+  try{return JSON.parse(localStorage.getItem(KEY)) || {daily:{},three:{},seven:{},history:{}}}
+  catch(e){return {daily:{},three:{},seven:{},history:{}}}
 }
 let data = load();
 
@@ -171,6 +200,15 @@ function makeDailyRow(item,i){
     <td class="person"><input class="check lunara" type="checkbox" data-type="daily" data-i="${i}" data-p="lunara"></td>`;
   return tr;
 }
+function makeSevenRow(item,i){
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td class="instance">${item.name}</td>
+    <td class="person"><input class="check elora" type="checkbox" data-type="seven" data-i="${i}" data-p="elora"><span class="date">${labelDate(data.seven[`${i}-elora`])}</span></td>
+    <td class="person"><input class="check varig" type="checkbox" data-type="seven" data-i="${i}" data-p="varig"><span class="date">${labelDate(data.seven[`${i}-varig`])}</span></td>
+    <td class="person"><input class="check lunara" type="checkbox" data-type="seven" data-i="${i}" data-p="lunara"><span class="date">${labelDate(data.seven[`${i}-lunara`])}</span></td>`;
+  return tr;
+}
+
 function makeThreeRow(item,i){
   const tr=document.createElement("tr");
   const e=data.three[`${i}-elora`], v=data.three[`${i}-varig`];
@@ -184,10 +222,22 @@ function makeThreeRow(item,i){
   return tr;
 }
 function render(){
-  const d=document.getElementById("daily"), t=document.getElementById("three");
-  d.innerHTML=""; t.innerHTML="";
-  daily.forEach((item,i)=>d.appendChild(makeDailyRow(item,i)));
+  const d=document.getElementById("daily"), t=document.getElementById("three"), s=document.getElementById("seven");
+  d.innerHTML=""; t.innerHTML=""; s.innerHTML="";
+  const prioridades = [
+    {titulo:"Prioridade Máxima", classe:"maxima", inicio:0, fim:3},
+    {titulo:"Prioridade Alta", classe:"alta", inicio:3, fim:10},
+    {titulo:"Prioridade Média", classe:"media", inicio:10, fim:12},
+    {titulo:"Prioridade Baixa", classe:"baixa", inicio:12, fim:14}
+  ];
+  prioridades.forEach(grupo=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td colspan="4" class="priority ${grupo.classe}">${grupo.titulo}</td>`;
+    d.appendChild(tr);
+    daily.slice(grupo.inicio,grupo.fim).forEach((item,i)=>d.appendChild(makeDailyRow(item,i+grupo.inicio)));
+  });
   three.forEach((item,i)=>t.appendChild(makeThreeRow(item,i)));
+  seven.forEach((item,i)=>s.appendChild(makeSevenRow(item,i)));
   const today=todayKey();
 
   document.querySelectorAll('[data-type="daily"]').forEach(x=>{
@@ -198,6 +248,11 @@ function render(){
     const k=`${x.dataset.i}-${x.dataset.p}`, last=data.three[k];
     x.checked=!!last && daysDiff(last,today)<3;
     x.title=last ? `Feita em ${last}. Próxima disponível em ${labelDate(addDays(last,3))}` : "Ainda não feita";
+  });
+  document.querySelectorAll('[data-type="seven"]').forEach(x=>{
+    const k=`${x.dataset.i}-${x.dataset.p}`, last=data.seven[k];
+    x.checked=!!last && daysDiff(last,today)<7;
+    x.title=last ? `Feita em ${last}. Próxima disponível em ${labelDate(addDays(last,7))}` : "Ainda não feita";
   });
 }
 function addDays(s,n){
@@ -217,7 +272,7 @@ document.addEventListener("change",e=>{
       delete data.daily[k];
       if(data.history[today]) delete data.history[today][k];
     }
-  }else{
+  }else if(type==="three"){
     if(e.target.checked){
       const last=data.three[k];
       if(last && daysDiff(last,today)<3){
@@ -230,6 +285,21 @@ document.addEventListener("change",e=>{
       data.history[today][k]={type:"three",name:three[+i].name,person:p};
     }else{
       delete data.three[k];
+      if(data.history[today]) delete data.history[today][k];
+    }
+  }else{
+    if(e.target.checked){
+      const last=data.seven[k];
+      if(last && daysDiff(last,today)<7){
+        e.target.checked=true;
+        showStatus("Ainda está no período de recarga de 7 dias.");
+        return;
+      }
+      data.seven[k]=today;
+      data.history[today]=data.history[today]||{};
+      data.history[today][k]={type:"seven",name:seven[+i].name,person:p};
+    }else{
+      delete data.seven[k];
       if(data.history[today]) delete data.history[today][k];
     }
   }
@@ -253,7 +323,7 @@ function renderHistory(){
     if(!arr.length) return "";
     const personName = person==="elora" ? "🌸 Elora" : person==="varig" ? "🔷 Varig" : "🟣 Lunara";
     const items = arr.map(x => {
-      const suffix = x.type==="three" ? ' <span class="sub" style="display:inline">• 3 em 3 dias</span>' : "";
+      const suffix = x.type==="three" ? ' <span class="sub" style="display:inline">• 3 em 3 dias</span>' : x.type==="seven" ? ' <span class="sub" style="display:inline">• 7 em 7 dias</span>' : "";
       return '<li>' + x.name + suffix + '</li>';
     }).join("");
     return '<div style="margin-top:8px"><b>' + personName + '</b><ul style="margin:5px 0 0;padding-left:20px">' + items + '</ul></div>';
@@ -272,7 +342,7 @@ document.getElementById("clearDaily").onclick=()=>{
 };
 document.getElementById("clearAll").onclick=()=>{
   if(confirm("Isso apagará todas as marcações salvas. Continuar?")){
-    data={daily:{},three:{},history:{}};save();render();renderHistory();showStatus("Tudo foi limpo");
+    data={daily:{},three:{},seven:{},history:{}};save();render();renderHistory();showStatus("Tudo foi limpo");
   }
 };
 document.getElementById("todayBtn").onclick=()=>{document.getElementById("historyPanel").style.display="none";document.getElementById("historyBtn").classList.remove("active");render();showStatus("Data atual: "+todayKey().split("-").reverse().join("/"));};
