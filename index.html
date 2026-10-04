@@ -212,10 +212,10 @@ function makeDailyRow(item,i){
     ? '<span class="goma">✕2 DROP <span class="candy">🍬</span> GOMA</span>'
     : '';
   const reset=item.resetHours ? '<span class="sub">• Reseta 3 horas após o check</span>' : '';
-  tr.innerHTML=`<td class="instance">${item.name}${badge}${reset}<span class="timer" id="timer-${i}"></span></td>
-    <td class="person"><input class="check elora" type="checkbox" data-type="daily" data-i="${i}" data-p="elora"></td>
-    <td class="person"><input class="check varig" type="checkbox" data-type="daily" data-i="${i}" data-p="varig"></td>
-    <td class="person"><input class="check lunara" type="checkbox" data-type="daily" data-i="${i}" data-p="lunara"></td>`;
+  tr.innerHTML=`<td class="instance">${item.name}${badge}${reset}</td>
+    <td class="person"><input class="check elora" type="checkbox" data-type="daily" data-i="${i}" data-p="elora"><span class="timer" id="timer-${i}-elora"></span></td>
+    <td class="person"><input class="check varig" type="checkbox" data-type="daily" data-i="${i}" data-p="varig"><span class="timer" id="timer-${i}-varig"></span></td>
+    <td class="person"><input class="check lunara" type="checkbox" data-type="daily" data-i="${i}" data-p="lunara"><span class="timer" id="timer-${i}-lunara"></span></td>`;
   return tr;
 }
 function makeSevenRow(item,i){
@@ -283,15 +283,16 @@ function render(){
 let timerInterval=null;
 function updateInfiniteTimer(){
   document.querySelectorAll('.timer').forEach(el=>{
-    const i=Number(el.id.replace('timer-',''));
+    const parts=el.id.replace('timer-','').split('-');
+    const i=Number(parts[0]), p=parts[1];
     const item=daily[i];
     if(!item || !item.resetHours)return;
-    const times=['elora','varig','lunara'].map(p=>Number(data.daily[`${i}-${p}`])||0).filter(Boolean);
-    if(!times.length){el.textContent='';return;}
-    const remaining=Math.max(0,item.resetHours*60*60*1000-(Date.now()-Math.max(...times)));
+    const marcado=Number(data.daily[`${i}-${p}`])||0;
+    if(!marcado){el.textContent='';return;}
+    const remaining=Math.max(0,item.resetHours*60*60*1000-(Date.now()-marcado));
     if(remaining<=0){el.textContent='Disponível novamente';return;}
     const total=Math.ceil(remaining/1000), h=Math.floor(total/3600), m=Math.floor((total%3600)/60), sec=total%60;
-    el.textContent=`⏱ ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')} restantes`;
+    el.textContent=`⏱ ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
   });
 }
 function startTimer(){clearInterval(timerInterval);updateInfiniteTimer();timerInterval=setInterval(updateInfiniteTimer,1000);}
